@@ -84,14 +84,14 @@ public class AutonomousMishap extends LinearOpMode {
             
             // var switchPosition = GetSwitchPosition();
             
-            if (switchPosition == 0) // Facing crater
-            {
-                RunCraterMode();
-            }
-            else // Facing goal zone
-            {
-                RunGoalMode();
-            }
+            //if (switchPosition == 0) // Facing crater
+            //{
+            //   RunCraterMode();
+            //}
+            //else // Facing goal zone
+            //{
+            //   RunGoalMode();
+            //}
 
             
 
@@ -139,7 +139,7 @@ public class AutonomousMishap extends LinearOpMode {
             // Drive(-12);
     }
     
-    private void RunGoalMode();
+    private void RunGoalMode()
     {
         // LowerBot();
         // Turn(90);

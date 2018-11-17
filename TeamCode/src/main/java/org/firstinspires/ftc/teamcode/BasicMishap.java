@@ -57,14 +57,14 @@ public class BasicMishap extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private MishapBot mishapBot = new MishapBot();
+    private MishapBot mishapBot;
 
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        mishapBot.initialize();
+        mishapBot = new MishapBot(hardwareMap);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -100,50 +100,18 @@ public class BasicMishap extends LinearOpMode {
             //leftPower = gamepad1.dpad_down;
 
             // Send calculated power to wheels
-            backl.setPower(leftPower);
-            frontl.setPower(leftPower);
-            backr.setPower(rightPower);
-            frontr.setPower(rightPower);
+            mishapBot.Drive(leftPower, rightPower);
             
-            if (gamepad1.dpad_up)
-            {
-                topc.setPower(+0.5);
+            if (gamepad1.dpad_up) {
+                mishapBot.RaiseLower(0.5);
             }
-            
             else if (gamepad1.dpad_down)
             {
-                topc.setPower(-0.5);
+                mishapBot.RaiseLower(-0.5);
             }
-            else
-            {
-                topc.setPower(0);
+            else {
+                mishapBot.RaiseLower(0.0);
             }
-            
-            
-            
-            
-            
-            if (gamepad1.right_bumper && i < 1.0)
-            {
-                 i = i + 0.01;
-                spin.setPosition(i);
-               
-            }
-            else if (gamepad1.left_bumper && i > 0.0)
-            {
-                 i = i - 0.01;
-                spin.setPosition(i);
-               
-            }
-            else{
-               // spin.setPosition(i);
-            }
-            
-            
-             if (!gamepad1.right_bumper)
-             {
-                  telemetry.addData("button pressed" , i);
-             }
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());

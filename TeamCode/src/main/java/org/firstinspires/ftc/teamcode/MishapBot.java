@@ -5,20 +5,23 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 public class MishapBot {
-    
+
+    private HardwareMap hardwareMap;
     private DcMotor backl = null;
     private DcMotor frontl = null;
     private DcMotor backr = null;
     private DcMotor frontr = null;
     private DcMotor topc = null;
-    private Servo spin = null;
-    
-    public void initialize()
+
+    public MishapBot(HardwareMap hardwareMap)
     {
+        this.hardwareMap = hardwareMap;
+
         frontr = hardwareMap.get(DcMotor.class, "front_right");
         frontr.setDirection(DcMotor.Direction.REVERSE);
 
@@ -33,9 +36,20 @@ public class MishapBot {
 
         topc = hardwareMap.get(DcMotor.class, "top_claw");
         topc.setDirection(DcMotor.Direction.FORWARD);
+    }
 
-        spin = hardwareMap.get(Servo.class, "front_spin");
-        spin.setDirection(Servo.Direction.FORWARD);
+    public void Drive(double leftPower, double rightPower)
+    {
+        backl.setPower(leftPower);
+        frontl.setPower(leftPower);
+
+        backr.setPower(rightPower);
+        frontr.setPower(rightPower);
+    }
+
+    public void RaiseLower(double power)
+    {
+        topc.setPower(power);
     }
     
 }
