@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -78,7 +79,11 @@ public class MishapBot {
         if (power < 0) return;
 
         // If we reached the top don't raise hook any further
-        if (limitHookTop.getState() == true) return;
+        if (limitHookTop.getState() == true) 
+        {
+            stopHook();
+            return;
+        }
 
         motorHook.setPower(power);
     }
@@ -90,7 +95,11 @@ public class MishapBot {
         if (power > 0) return;
 
         // If we reached the bottom don't lower hook any further
-        if (limitHookBottom.getState() == true) return;
+        if (limitHookBottom.getState() == true)
+        {
+            stopHook();
+            return;
+        }
 
         motorHook.setPower(power);
     }

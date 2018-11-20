@@ -84,7 +84,7 @@ public class BasicMishap extends LinearOpMode {
             mishapBot.drive(leftPower, rightPower);
             
             if (gamepad1.dpad_up) {
-                mishapBot.raiseHook(0.5);	
+                mishapBot.raiseHook(0.5);    
             }
             else if (gamepad1.dpad_down)
             {
