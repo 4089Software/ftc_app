@@ -61,10 +61,13 @@ public class BasicMishap extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        Environment.setHardwareMap(hardwareMap);
+        Environment.setTelemetry(telemetry);
+
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        mishapBot = new MishapBot(hardwareMap);
+        mishapBot = new MishapBot();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -74,30 +77,34 @@ public class BasicMishap extends LinearOpMode {
         while (opModeIsActive()) {
 
             // Setup a variable for each drive wheel to save power level for telemetry
-            double leftPower;
-            double rightPower;
-
-            leftPower  = -gamepad1.left_stick_y;
-            rightPower = -gamepad1.right_stick_y;
+            double leftPower = Math.abs(gamepad1.left_stick_y) > 0.2 ? -gamepad1.left_stick_y : 0.0;
+            double rightPower = Math.abs(gamepad1.right_stick_y) > 0.2 ? -gamepad1.right_stick_y : 0.0;
 
             // Send calculated power to wheels
-            mishapBot.drive(leftPower, rightPower);
+            mishapBot.getDriveBase().drive(leftPower, rightPower);
             
             if (gamepad1.dpad_up) {
-                mishapBot.raiseHook(0.5);    
+                mishapBot.getHook().raise();
             }
-            else if (gamepad1.dpad_down)
-            {
-                mishapBot.lowerHook(-0.5);
+            else if (gamepad1.dpad_down) {
+                mishapBot.getHook().lower();
             }
             else {
-                mishapBot.stopHook();
+                mishapBot.getHook().stop();
             }
 
-            // Show the elapsed game time and wheel power.
+            if (gamepad1.left_trigger > 0.2) {
+                mishapBot.getArm().lower();
+            }
+            else if (gamepad1.right_trigger > 0.2) {
+                mishapBot.getArm().raise();
+            }
+            else {
+                mishapBot.getArm().stop();
+            }
+
+            // Show the elapsed game time
             telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
-            //telemetry.addData("J.gamepad1.right_bumper.toString()");
             telemetry.update();
         }
     }
