@@ -12,44 +12,91 @@ import com.qualcomm.robotcore.util.Range;
 public class MishapBot {
 
     private HardwareMap hardwareMap;
-    private DcMotor backl = null;
-    private DcMotor frontl = null;
-    private DcMotor backr = null;
-    private DcMotor frontr = null;
-    private DcMotor topc = null;
+
+    private DcMotor motorBackLeft = null;
+    private DcMotor motorBackRight = null;
+    private DcMotor motorFrontLeft = null;
+    private DcMotor motorFrontRight = null;
+
+    private DcMotor motorHook = null;
+
+    private DigitalChannel limitHookTop = null;
+    private DigitalChannel limitHookBottom = null;
+
+    private DigitalChannel limitArmRest = null;
+    private DigitalChannel limitArmPickup = null;
+    private DigitalChannel limitArmDrop = null;
 
     public MishapBot(HardwareMap hardwareMap)
     {
         this.hardwareMap = hardwareMap;
 
-        frontr = hardwareMap.get(DcMotor.class, "front_right");
-        frontr.setDirection(DcMotor.Direction.REVERSE);
+        motorFrontRight = hardwareMap.get(DcMotor.class, "motor_front_right");
+        motorFrontRight.setDirection(DcMotor.Direction.REVERSE);
 
-        frontl = hardwareMap.get(DcMotor.class, "front_left");
-        frontl.setDirection(DcMotor.Direction.FORWARD);
+        motorFrontLeft = hardwareMap.get(DcMotor.class, "motor_front_left");
+        motorFrontLeft.setDirection(DcMotor.Direction.FORWARD);
 
-        backr = hardwareMap.get(DcMotor.class, "back_right");
-        backr.setDirection(DcMotor.Direction.REVERSE);
+        motorBackRight = hardwareMap.get(DcMotor.class, "motor_back_right");
+        motorBackRight.setDirection(DcMotor.Direction.REVERSE);
 
-        backl = hardwareMap.get(DcMotor.class, "back_left");
-        backl.setDirection(DcMotor.Direction.FORWARD);
+        motorBackLeft = hardwareMap.get(DcMotor.class, "motor_back_left");
+        motorBackLeft.setDirection(DcMotor.Direction.FORWARD);
 
-        topc = hardwareMap.get(DcMotor.class, "top_claw");
-        topc.setDirection(DcMotor.Direction.FORWARD);
+        motorHook = hardwareMap.get(DcMotor.class, "motor_hook");
+        motorHook.setDirection(DcMotor.Direction.FORWARD);
+
+        limitHookTop = hardwareMap.get(DigitalChannel.class, "limit_hook_top");
+        limitHookTop.setMode(DigitalChannel.Mode.INPUT);
+
+        limitHookBottom = hardwareMap.get(DigitalChannel.class, "limit_hook_bottom");
+        limitHookBottom.setMode(DigitalChannel.Mode.INPUT);
+
+        //limitArmRest = hardwareMap.get(DigitalChannel.class, "limit_arm_rest");
+        //limitArmRest.setMode(DigitalChannel.Mode.INPUT);
+
+        //limitArmPickup = hardwareMap.get(DigitalChannel.class, "limit_arm_pickup");
+        //limitArmPickup.setMode(DigitalChannel.Mode.INPUT);
+
+        //limitArmDrop = hardwareMap.get(DigitalChannel.class, "limit_arm_drop");
+        //limitArmDrop.setMode(DigitalChannel.Mode.INPUT);
     }
 
-    public void Drive(double leftPower, double rightPower)
+    public void drive(double leftPower, double rightPower)
     {
-        backl.setPower(leftPower);
-        frontl.setPower(leftPower);
+        motorBackLeft.setPower(leftPower);
+        motorFrontLeft.setPower(leftPower);
 
-        backr.setPower(rightPower);
-        frontr.setPower(rightPower);
+        motorBackRight.setPower(rightPower);
+        motorFrontRight.setPower(rightPower);
     }
 
-    public void RaiseLower(double power)
+    // Lowers the bot
+    public void raiseHook(double power)
     {
-        topc.setPower(power);
+        // Power needs to be positive
+        if (power < 0) return;
+
+        // If we reached the top don't raise hook any further
+        if (limitHookTop.getState() == true) return;
+
+        motorHook.setPower(power);
     }
-    
+
+    // Raises the bot
+    public void lowerHook(double power)
+    {
+        // Power needs to be negative
+        if (power > 0) return;
+
+        // If we reached the bottom don't lower hook any further
+        if (limitHookBottom.getState() == true) return;
+
+        motorHook.setPower(power);
+    }
+
+    public void stopHook()
+    {
+        motorHook.setPower(0);
+    }
 }

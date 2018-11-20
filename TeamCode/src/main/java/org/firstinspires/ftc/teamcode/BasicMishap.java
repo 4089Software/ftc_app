@@ -77,40 +77,21 @@ public class BasicMishap extends LinearOpMode {
             double leftPower;
             double rightPower;
 
-            // Choose to drive using either Tank Mode, or POV Mode
-            // Comment out the method that's not used.  The default below is POV.
-
-            // POV Mode uses left stick to go forward, and right stick to turn.
-            // - This uses basic math to combine motions and is easier to drive straight.
-            double drive = -gamepad1.left_stick_y;
-            double turn  =  gamepad1.right_stick_x;
-            boolean up = gamepad1.dpad_up;
-            boolean down = gamepad1.dpad_down;
-            boolean up1 = gamepad1.left_bumper;
-            boolean down1 = gamepad1.right_bumper;
-            
-            //leftPower    = Range.clip(drive + turn, -1.0, 1.0) ;
-            //rightPower   = Range.clip(drive - turn, -1.0, 1.0) ;
-
-            // Tank Mode uses one stick to control each wheel.
-            // - This requires no math, but it is hard to drive forward slowly and keep straight.
-            leftPower  = -gamepad1.left_stick_y ;
-            rightPower = -gamepad1.right_stick_y ;
-            //rightPower = gamepad1.dpad_up;
-            //leftPower = gamepad1.dpad_down;
+            leftPower  = -gamepad1.left_stick_y;
+            rightPower = -gamepad1.right_stick_y;
 
             // Send calculated power to wheels
-            mishapBot.Drive(leftPower, rightPower);
+            mishapBot.drive(leftPower, rightPower);
             
             if (gamepad1.dpad_up) {
-                mishapBot.RaiseLower(0.5);
+                mishapBot.raiseHook(0.5);	
             }
             else if (gamepad1.dpad_down)
             {
-                mishapBot.RaiseLower(-0.5);
+                mishapBot.lowerHook(-0.5);
             }
             else {
-                mishapBot.RaiseLower(0.0);
+                mishapBot.stopHook();
             }
 
             // Show the elapsed game time and wheel power.
