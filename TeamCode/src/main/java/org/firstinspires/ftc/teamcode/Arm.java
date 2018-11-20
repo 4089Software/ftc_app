@@ -35,9 +35,12 @@ public class Arm {
     private ArmState state = ArmState.Stopped;
 
     public Arm() {
+        initialize();
+    }
+
+    public void initialize() {
         armMotor = Environment.getHardwareMap().get(DcMotor.class, "motor_arm");
         armMotor.setDirection(DcMotor.Direction.FORWARD);
-        armMotor.setPower(0);
 
         foldedLimitSwitch = Environment.getHardwareMap().get(DigitalChannel.class, "limit_arm_rest");
         foldedLimitSwitch.setMode(DigitalChannel.Mode.INPUT);
@@ -58,6 +61,11 @@ public class Arm {
         else if (pickupLimitSwitch.getState()) {
             location = ArmLocation.Pickup;
         }
+        else {
+            location = ArmLocation.Unknown;
+        }
+
+        setState(ArmState.Stopped, 0.0);
     }
 
     public void raise() {
@@ -82,7 +90,6 @@ public class Arm {
                     location = ArmLocation.Front;
                 }
                 else if (location == ArmLocation.Front && dropLimitSwitch.getState()) {
-                    // should not really happen
                     location = ArmLocation.Drop;
                     power = 0.0;
                 }
@@ -92,10 +99,8 @@ public class Arm {
             }
         }
 
-        armMotor.setPower(power);
-        setState(ArmState.Raising);
+        setState(ArmState.Raising, power);
     }
-
 
     public void lower() {
         double power = -0.5;
@@ -119,7 +124,6 @@ public class Arm {
                     location = ArmLocation.Back;
                 }
                 else if (location == ArmLocation.Back && dropLimitSwitch.getState()) {
-                    // should not really happen
                     location = ArmLocation.Drop;
                     power = 0.0;
                 }
@@ -129,20 +133,17 @@ public class Arm {
             }
         }
 
-        armMotor.setPower(power);
-        setState(ArmState.Lowering);
+        setState(ArmState.Lowering, power);
     }
 
     // Stops the hook motor
     public void stop() {
-        armMotor.setPower(0.0);
-        setState(ArmState.Stopped);
+        setState(ArmState.Stopped, 0.0);
     }
 
-    private void setState(ArmState newState) {
-        if (state != newState) {
-            state = newState;
-            Environment.getTelemetry().addData("ArmState", "new state: %s", state.toString());
-        }
+    private void setState(ArmState newState, double power) {
+        armMotor.setPower(power);
+        state = newState;
+        Environment.getTelemetry().addData("ArmState", "new state: %s, power: 5.2f", state.toString(), armMotor.getPower());
     }
 }

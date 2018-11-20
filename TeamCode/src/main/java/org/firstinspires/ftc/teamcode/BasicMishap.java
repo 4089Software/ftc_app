@@ -75,37 +75,46 @@ public class BasicMishap extends LinearOpMode {
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
+            processArmInput();
+            processHookInput();
+            processDriveBaseInput();
 
-            // Setup a variable for each drive wheel to save power level for telemetry
-            double leftPower = Math.abs(gamepad1.left_stick_y) > 0.2 ? -gamepad1.left_stick_y : 0.0;
-            double rightPower = Math.abs(gamepad1.right_stick_y) > 0.2 ? -gamepad1.right_stick_y : 0.0;
-
-            // Send calculated power to wheels
-            mishapBot.getDriveBase().drive(leftPower, rightPower);
-            
-            if (gamepad1.dpad_up) {
-                mishapBot.getHook().raise();
-            }
-            else if (gamepad1.dpad_down) {
-                mishapBot.getHook().lower();
-            }
-            else {
-                mishapBot.getHook().stop();
-            }
-
-            if (gamepad1.left_trigger > 0.2) {
-                mishapBot.getArm().lower();
-            }
-            else if (gamepad1.right_trigger > 0.2) {
-                mishapBot.getArm().raise();
-            }
-            else {
-                mishapBot.getArm().stop();
-            }
-
-            // Show the elapsed game time
+            // Show the elapsed time
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.update();
+        }
+    }
+
+    private void processDriveBaseInput() {
+        // Setup a variable for each drive wheel to save power level for telemetry
+        double leftPower = Math.abs(gamepad1.left_stick_y) > 0.2 ? -gamepad1.left_stick_y : 0.0;
+        double rightPower = Math.abs(gamepad1.right_stick_y) > 0.2 ? -gamepad1.right_stick_y : 0.0;
+
+        // Send calculated power to wheels
+        mishapBot.getDriveBase().drive(leftPower, rightPower);
+    }
+
+    private void processArmInput() {
+        if (gamepad1.left_trigger > 0.2) {
+            mishapBot.getArm().lower();
+        }
+        else if (gamepad1.right_trigger > 0.2) {
+            mishapBot.getArm().raise();
+        }
+        else {
+            mishapBot.getArm().stop();
+        }
+    }
+
+    private void processHookInput() {
+        if (gamepad1.dpad_up) {
+            mishapBot.getHook().raise();
+        }
+        else if (gamepad1.dpad_down) {
+            mishapBot.getHook().lower();
+        }
+        else {
+            mishapBot.getHook().stop();
         }
     }
 }
