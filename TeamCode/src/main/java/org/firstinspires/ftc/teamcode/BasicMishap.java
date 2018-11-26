@@ -78,6 +78,7 @@ public class BasicMishap extends LinearOpMode {
             processArmInput();
             processHookInput();
             processDriveBaseInput();
+            processClawInput();
 
             // Show the elapsed time
             telemetry.addData("Status", "Run Time: " + runtime.toString());
@@ -115,6 +116,21 @@ public class BasicMishap extends LinearOpMode {
         }
         else {
             mishapBot.getHook().stop();
+        }
+    }
+
+    private void processClawInput() {
+        if (gamepad1.a) {
+            mishapBot.getRightClaw().open();
+        }
+        else if (gamepad1.b) {
+            mishapBot.getRightClaw().close();
+        }
+        else if (gamepad1.x) {
+            mishapBot.getLeftClaw().open();
+        }
+        else if (gamepad1.y) {
+            mishapBot.getLeftClaw().close();
         }
     }
 }
