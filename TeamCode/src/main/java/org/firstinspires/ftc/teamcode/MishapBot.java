@@ -13,8 +13,8 @@ public class MishapBot {
         hook = new Hook();
         arm = new Arm();
         driveBase = new DriveBase();
-        leftClaw = new Claw("servo_left_claw");
-        rightClaw = new Claw("servo_right_claw");
+        leftClaw = new Claw("servo_left_claw", Claw.ClawDirection.Left);
+        rightClaw = new Claw("servo_right_claw", Claw.ClawDirection.Right);
     }
 
     public Hook getHook() {
@@ -32,4 +32,13 @@ public class MishapBot {
     public Claw getLeftClaw() { return leftClaw; }
 
     public Claw getRightClaw() { return rightClaw; }
+    
+    public void update() {
+        leftClaw.update();
+        rightClaw.update();
+        
+        Environment.getTelemetry().addData("ClawStates", "%s, %s",
+                leftClaw.toString(),
+                rightClaw.toString());
+    }
 }

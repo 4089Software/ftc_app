@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 public class Arm {
 
-    private static final double MIN_POWER = 0.3;
+    private static final double MIN_POWER = 0.1;
     private static final double MAX_POWER = 0.7;
     private static final double INTERPOLATION_TIME = 1.5;
 
@@ -37,7 +37,7 @@ public class Arm {
 
     public void initialize() {
         armMotor = Environment.getHardwareMap().get(DcMotor.class, "motor_arm");
-        armMotor.setDirection(DcMotor.Direction.FORWARD);
+        armMotor.setDirection(DcMotor.Direction.REVERSE);
         armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -52,12 +52,12 @@ public class Arm {
     }
 
     public void lower() {
-        if (pickupLimitSwitch.getState()) {
-            setState(ArmState.Stopped);
-        }
-        else {
+        //if (pickupLimitSwitch.getState()) {
+        //    setState(ArmState.Stopped);
+        //}
+        //else {
             setState(ArmState.Lowering);
-        }
+        //}
     }
 
     public void stop() {
@@ -65,6 +65,7 @@ public class Arm {
     }
 
     private void setState(ArmState newState) {
+        Environment.getTelemetry().addData("ArmState", "new state: %s", newState.name());
         double direction = newState == ArmState.Lowering ? -1.0 : 1.0;
 
         if (state != newState) {
@@ -87,7 +88,7 @@ public class Arm {
 
         armMotor.setPower(currentPower);
 
-        Environment.getTelemetry().addData("ArmState", "state: %s (%5.2f), power: %5.2f -> %5.2f (%5.2f), position: %d, limit: %d",
+        Environment.getTelemetry().addData("ArmState", "state: %s (%5.2f), power: %5.2f -> %5.2f (%5.2f), position: %d, limit: %b",
                 state.name(),
                 stateTime.seconds(),
                 currentPower,
