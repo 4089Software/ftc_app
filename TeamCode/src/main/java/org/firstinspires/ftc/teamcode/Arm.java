@@ -6,9 +6,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 public class Arm {
 
-    private static final double MIN_POWER = 0.1;
+    private static final double MIN_POWER = 0.3;
     private static final double MAX_POWER = 0.7;
-    private static final double INTERPOLATION_TIME = 1.5;
+    private static final double INTERPOLATION_TIME = 1.0;
 
     private enum ArmState {
         Raising,
@@ -45,8 +45,6 @@ public class Arm {
         pickupLimitSwitch.setMode(DigitalChannel.Mode.INPUT);
 
         setState(ArmState.Stopped);
-
-        Environment.log("Arm initialized.");
     }
 
     public void raise() {
@@ -54,11 +52,12 @@ public class Arm {
     }
 
     public void lower() {
+        // TODO: fix limit switch; getState() currently always returns true
         //if (pickupLimitSwitch.getState()) {
         //    setState(ArmState.Stopped);
         //}
         //else {
-            setState(ArmState.Lowering);
+        setState(ArmState.Lowering);
         //}
     }
 
@@ -67,7 +66,6 @@ public class Arm {
     }
 
     private void setState(ArmState newState) {
-        Environment.getTelemetry().addData("ArmState", "setState: %s", newState.name());
         double direction = newState == ArmState.Lowering ? -1.0 : 1.0;
 
         if (state != newState) {
@@ -90,7 +88,7 @@ public class Arm {
 
         armMotor.setPower(currentPower);
 
-        Environment.getTelemetry().addData("ArmState", "state: %s (%5.2f), power: %5.2f -> %5.2f (%5.2f), position: %d, limit: %b",
+        Environment.getTelemetry().addData("Arm", "state: %s (%5.2f), power: %5.2f -> %5.2f (%5.2f), position: %d, limit: %b",
                 state.name(),
                 stateTime.seconds(),
                 currentPower,

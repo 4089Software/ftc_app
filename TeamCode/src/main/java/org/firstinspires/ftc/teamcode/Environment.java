@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Environment {
     private static Telemetry telemetry;
     private static HardwareMap hardwareMap;
+    private static LinearOpMode opMode;
 
     public static void setTelemetry(Telemetry t) {
         telemetry = t;
@@ -19,9 +21,11 @@ public class Environment {
         hardwareMap = h;
     }
 
-    public static HardwareMap getHardwareMap() {
-        return hardwareMap;
-    }
+    public static HardwareMap getHardwareMap() { return hardwareMap; }
+
+    public static void setOpMode(LinearOpMode mode) { opMode = mode; }
+
+    public static LinearOpMode getOpMode() { return opMode; }
 
     public static void log(String format, Object ... args) {
         telemetry.log().add(format, args);

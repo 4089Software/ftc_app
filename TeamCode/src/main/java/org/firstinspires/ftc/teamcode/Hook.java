@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Hook {
     // Hook motor
@@ -27,11 +28,11 @@ public class Hook {
         // If we reached the top don't raise hook any further
         if (topLimitSwitch.getState()) {
             stop();
-            return;
         }
-
-        hookMotor.setPower(0.5);
-        Environment.getTelemetry().addData("Hook", "raise - power: %.2f", hookMotor.getPower());
+        else {
+            hookMotor.setPower(1.0);
+            Environment.getTelemetry().addData("Hook", "raise - power: %.2f", hookMotor.getPower());
+        }
     }
 
     // Lowers the hook (raises the bot if attached to lander)
@@ -39,11 +40,23 @@ public class Hook {
         // If we reached the bottom don't lower hook any further
         if (bottomLimitSwitch.getState()) {
             stop();
-            return;
+        }
+        else {
+            hookMotor.setPower(-1.0);
+            Environment.getTelemetry().addData("Hook", "lower - power: %.2f", hookMotor.getPower());
+        }
+    }
+
+    public void autoLowerBot(double timeoutSeconds) {
+        // To lower the bot we need to raise the hook
+        raise();
+        ElapsedTime stopwatch = new ElapsedTime();
+        while (Environment.getOpMode().opModeIsActive() && !topLimitSwitch.getState() && stopwatch.seconds() < timeoutSeconds) {
+            Environment.getTelemetry().addData("Hook", "autoLowerBot: waiting to lower bot");
+            Environment.getTelemetry().update();
         }
 
-        hookMotor.setPower(-0.5);
-        Environment.getTelemetry().addData("Hook", "lower - power: %.2f", hookMotor.getPower());
+        Environment.getTelemetry().addData("Hook", "autoLowerBot: complete");
     }
 
     // Stops the hook motor
