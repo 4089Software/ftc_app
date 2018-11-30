@@ -45,6 +45,8 @@ public class Arm {
         pickupLimitSwitch.setMode(DigitalChannel.Mode.INPUT);
 
         setState(ArmState.Stopped);
+
+        Environment.log("Arm initialized.");
     }
 
     public void raise() {
@@ -65,7 +67,7 @@ public class Arm {
     }
 
     private void setState(ArmState newState) {
-        Environment.getTelemetry().addData("ArmState", "new state: %s", newState.name());
+        Environment.getTelemetry().addData("ArmState", "setState: %s", newState.name());
         double direction = newState == ArmState.Lowering ? -1.0 : 1.0;
 
         if (state != newState) {

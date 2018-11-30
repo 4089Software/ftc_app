@@ -22,4 +22,8 @@ public class Environment {
     public static HardwareMap getHardwareMap() {
         return hardwareMap;
     }
+
+    public static void log(String format, Object ... args) {
+        telemetry.log().add(format, args);
+    }
 }
