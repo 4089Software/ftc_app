@@ -8,6 +8,7 @@ public class Environment {
     private static Telemetry telemetry;
     private static HardwareMap hardwareMap;
     private static LinearOpMode opMode;
+    private static MishapBot mishapBot;
 
     public static void setTelemetry(Telemetry t) {
         telemetry = t;
@@ -30,4 +31,8 @@ public class Environment {
     public static void log(String format, Object ... args) {
         telemetry.log().add(format, args);
     }
+
+    public static void setBot(MishapBot bot) { mishapBot = bot; }
+
+    public static MishapBot getBot() { return mishapBot; }
 }

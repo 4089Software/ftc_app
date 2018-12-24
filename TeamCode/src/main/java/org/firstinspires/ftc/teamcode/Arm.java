@@ -9,6 +9,7 @@ public class Arm {
     private static final double MIN_POWER = 0.3;
     private static final double MAX_POWER = 0.7;
     private static final double INTERPOLATION_TIME = 1.0;
+    private static final double ARM_LIMIT = 2800;
 
     private enum ArmState {
         Raising,
@@ -31,6 +32,7 @@ public class Arm {
     private double targetPower = 0.0;
     private double currentPower = 0.0;
 
+
     public Arm() {
         initialize();
     }
@@ -47,18 +49,40 @@ public class Arm {
         setState(ArmState.Stopped);
     }
 
+    public void reset() {
+        if (!pickupLimitSwitch.getState()) {
+            armMotor.setPower(-0.8);
+
+            ElapsedTime stopwatch = new ElapsedTime();
+            while (Environment.getOpMode().opModeIsActive() && !pickupLimitSwitch.getState() && stopwatch.seconds() < 5) {
+                Environment.getTelemetry().addData("Arm", "reset: waiting to lower arm");
+                Environment.getTelemetry().update();
+            }
+        }
+
+        armMotor.setPower(0);
+        armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        Environment.getTelemetry().addData("Arm", "reset: complete");
+        Environment.getTelemetry().update();
+    }
+
     public void raise() {
         setState(ArmState.Raising);
     }
 
     public void lower() {
-        // TODO: fix limit switch; getState() currently always returns true
-        //if (pickupLimitSwitch.getState()) {
-        //    setState(ArmState.Stopped);
-        //}
-        //else {
-        setState(ArmState.Lowering);
-        //}
+        if (pickupLimitSwitch.getState()) {
+            setState(ArmState.Stopped);
+        }
+        else {
+            setState(ArmState.Lowering);
+        }
+    }
+
+    public boolean pastLimit() {
+        return armMotor.getCurrentPosition() > ARM_LIMIT;
     }
 
     public void stop() {
@@ -84,6 +108,12 @@ public class Arm {
         else {
             targetPower = 0.0;
             currentPower = 0.0; // don't slow down to a stop, stop immediately
+        }
+
+        if (pickupLimitSwitch.getState()) {
+            // if we hit the pickup switch, zero out the arm's encoder position
+            armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
 
         armMotor.setPower(currentPower);

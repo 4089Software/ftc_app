@@ -27,6 +27,10 @@ public class DriveBase {
 
     public void drive(double leftPower, double rightPower)
     {
+        if (Environment.getBot().getArm().pastLimit()) {
+            // Don't drive if arm raised
+            return;
+        }
         motorBackLeft.setPower(leftPower);
         motorFrontLeft.setPower(leftPower);
 

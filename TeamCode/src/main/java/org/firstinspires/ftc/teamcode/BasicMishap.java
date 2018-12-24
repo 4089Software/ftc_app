@@ -51,6 +51,9 @@ public class BasicMishap extends LinearOpMode {
     }
 
     private void processArmInput() {
+        if (gamepad2.y) {
+            mishapBot.getArm().reset();
+        }
         if (gamepad2.left_trigger > 0.0) {
             mishapBot.getArm().lower();
         }

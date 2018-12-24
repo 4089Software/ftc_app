@@ -45,8 +45,12 @@ public class AutonomousMishap extends LinearOpMode {
         DEPOT_MODE
     };
 
+    private enum Direction {
+        LEFT,
+        RIGHT
+    };
+
     // Declare OpMode members.
-    private ElapsedTime runtime = new ElapsedTime();
     private MishapBot mishapBot;
     private DigitalChannel autonomousSwitch;
     private AutonomousMode mode = AutonomousMode.CRATER_MODE;
@@ -61,14 +65,14 @@ public class AutonomousMishap extends LinearOpMode {
         if (autonomousSwitch.getState()) {
             mode = AutonomousMode.DEPOT_MODE;
         }
+
+        mishapBot = new MishapBot();
+
         telemetry.addData("AutonomousMode", "Initialized. Mode: %s", mode.name());
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
-        runtime.reset();
-
-        mishapBot = new MishapBot();
 
         switch(mode) {
             case CRATER_MODE:
@@ -84,40 +88,33 @@ public class AutonomousMishap extends LinearOpMode {
     private void RunCraterMode()
     {
         // Lower the robot from lander
-        if (opModeIsActive()) {
-            mishapBot.getHook().autoLowerBot(10);
-        }
-        telemetry.update();
+        //lowerBot();
 
         // Drive backwards to unhook from lander
-        if (opModeIsActive()) {
-            mishapBot.getDriveBase().drive(-1, -1, 0.2);
-        }
-        telemetry.update();
+        //drive(-1, -1, 0.2);
 
         // Turn away from lander with the back end, so turn left
-        if (opModeIsActive()) {
-            mishapBot.getDriveBase().turnLeft(0.5, 3);
-        }
-        telemetry.update();
+        //turn(Direction.LEFT, 0.5, 3);
 
-        // Drive backwards into the clear
-        if (opModeIsActive()) {
-            mishapBot.getDriveBase().drive(-1, -1, 1);
-        }
-        telemetry.update();
-        
-        // LowerBot();
-        // Turn(90);
-        // Drive(2);
-        // Turn(90); // maybe -90
-        // Drive(4);
-        // Turn(45);
-        // Drive(6);
-        // DropFlag();
-        // Drive(-12);
+        // Drive backwards into the crater
+        drive(1, 1, 4);
+
+        // Turn towards depot
+        //turn(Direction.RIGHT, 0.5, 2.0);
+
+        // Drive forward to the depot
+        //drive(1, 1, 3);
+
+        // Open claws to drop marker
+        //dropMarker();
+
+        // Turn slightly to left to face crater with back
+        //turn(Direction.LEFT, 0.5, 0.5);
+
+        // Drive to crater backwards
+        //drive(-1, -1, 3);
     }
-    
+
     private void RunDepotMode()
     {
         // LowerBot();
@@ -125,7 +122,39 @@ public class AutonomousMishap extends LinearOpMode {
         // Drive(4);
         // Turn(-45);
         // Drive(-12);
-        
+
     }
 
+    private void lowerBot() {
+        if (opModeIsActive()) {
+            mishapBot.getHook().autoLowerBot(8);
+        }
+        telemetry.update();
+    }
+
+    private void dropMarker() {
+        if (opModeIsActive()) {
+            mishapBot.getArm().reset();
+        }
+        telemetry.update();
+    }
+
+    private void drive(double leftPower, double rightPower, double driveTimeInSeconds) {
+        if (opModeIsActive()) {
+            mishapBot.getDriveBase().drive(leftPower, rightPower, driveTimeInSeconds);
+        }
+        telemetry.update();
+    }
+
+    private void turn(Direction dir, double power, double turnTimeInSeconds) {
+        if (opModeIsActive()) {
+            if (dir == Direction.LEFT) {
+                mishapBot.getDriveBase().turnLeft(power, turnTimeInSeconds);
+            }
+            else {
+                mishapBot.getDriveBase().turnRight(power, turnTimeInSeconds);
+            }
+        }
+        telemetry.update();
+    }
 }

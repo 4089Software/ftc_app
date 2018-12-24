@@ -15,6 +15,8 @@ public class MishapBot {
         driveBase = new DriveBase();
         leftClaw = new Claw("servo_left_claw", Claw.ClawDirection.Left);
         rightClaw = new Claw("servo_right_claw", Claw.ClawDirection.Right);
+
+        Environment.setBot(this);
     }
 
     public Hook getHook() {
